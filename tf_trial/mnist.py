@@ -2,6 +2,15 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 
 
+def output_csv(prediction):
+    import csv
+    with open("output.csv", 'wb') as resultFile:
+        wr = csv.writer(resultFile)
+        wr.writerow(['id', 'label'])
+        for i in range(len(prediction)):
+            wr.writerow([i, prediction[i]])
+
+
 def mnist():
     """
     construct a simple two layer NN:
@@ -36,9 +45,14 @@ def mnist():
         batch_xs, batch_ys = mnist.train.next_batch(100)
         sess.run(train, feed_dict={x: batch_xs, y: batch_ys})
 
-    correct_prediction = tf.equal(tf.argmax(y_hat, 1), tf.argmax(y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
+    # construct the computation graph for evaluation
+    # correct_prediction = tf.equal(tf.argmax(y_hat, 1), tf.argmax(y, 1))
+    # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    prediction = sess.run(tf.argmax(y_hat, 1), feed_dict={x: mnist.test.images})
+    output_csv(prediction)
+    # print(prediction)
+    # print(sess.run(correct_prediction, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
+    # print(sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels}))
 
 
 if __name__ == '__main__':
